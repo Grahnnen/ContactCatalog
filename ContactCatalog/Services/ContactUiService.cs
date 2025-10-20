@@ -13,55 +13,85 @@ namespace ContactCatalog.Services
 	{
 		private readonly ContactService _contactService;
 		private readonly ILogger _logger;
+		private readonly ContactValidator _validator;
 
-		private int id = 1; //ContactID
+		public int id = 1; //ContactID
+
 		public ContactUiService(ContactService service, ILogger<ContactService> logger)
 		{
 			_contactService = service;
 			this._logger = logger;
 		}
 
+		public void MainMenu()
+		{
+			while (true)
+			{
+				Console.Clear();
+				Console.WriteLine("Contact Catalog");
+				Console.WriteLine("1) Add");
+				Console.WriteLine("2) List");
+				Console.WriteLine("3) Search");
+				Console.WriteLine("4) Filter by Tag");
+				Console.WriteLine("5) Export CSV");
+				Console.WriteLine("0) Exit");
+				Console.Write("Choice: ");
+				var choice = Console.ReadLine();
+
+				Console.Clear();
+
+				//Calls the function depending on your choice
+				switch (choice)
+				{
+					case "1":
+						AddContact();
+						break;
+					case "2":
+						ListContacts();
+						break;
+					case "3":
+						SearchContacts();
+						break;
+					case "4":
+						FilterByTag();
+						break;
+					case "5":
+						ExportCsv();
+						break;
+					case "0":
+						return;
+					default:
+						Console.WriteLine("Invalid choice.");
+						break;
+				}
+
+				//Pauses program until you press a key
+				Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
+				Console.ReadKey();
+			}
+		}
+
 		public void AddContact()
 		{
-			try
-			{
-				Console.Write("Name: ");
-				string name = Console.ReadLine();
-				Console.Write("Email: ");
-				string email = Console.ReadLine();
-				Console.Write("Tags (komma-separerade): ");
-				var tags = Console.ReadLine() 
-					.Split(',', StringSplitOptions.RemoveEmptyEntries)
-					.Select(t => t.Trim())
-					.ToList(); //Saves all tags separated by comma
+			Console.Write("Name: ");
+			string name = Console.ReadLine();
+			Console.Write("Email: ");
+			string email = Console.ReadLine();
+			Console.Write("Tags (komma-separerade): ");
+			var tags = Console.ReadLine() 
+				.Split(',', StringSplitOptions.RemoveEmptyEntries)
+				.Select(t => t.Trim())
+				.ToList(); //Saves all tags separated by comma
 
-				var contact = new Contact { Id = id, Name = name, Email = email, Tags = tags };//Create new contact 
-				_contactService.Add(contact);//Try add it
-				id++;//increament contactID
-
-				_logger.LogInformation("Contact added: {Email}", email);
-				Console.WriteLine($"\nLade till {_contactService.GetAll().Count()} kontakt i katalogen.\n");
-				
-			}
-			catch (DuplicateEmailException ex)//If duplicate email
+			var contact = new Contact { Id = id, Name = name, Email = email, Tags = tags };//Create new contact 
+			try//Try add contact
 			{
-				_logger.LogWarning("Duplicate email: {Email}", ex.Message);
-				Console.WriteLine("E-postadressen finns redan.");
+				_contactService.Add(contact);
+				id++; 
 			}
-			catch (InvalidEmailException ex)//if invalid email
-			{
-				_logger.LogWarning("Invalid email: {Email}", ex.Message);
-				Console.WriteLine("Ogiltig e-postadress.");
-			}
-			catch(InvalidNameException ex)//if invalid name
-			{
-				_logger.LogWarning("Invalid name: {Name}", ex.Message);
-				Console.WriteLine("Ogiltig namn.");
-			}
-			catch (Exception ex) //if some other error
-			{
-				_logger.LogError(ex, "Error adding contact");
-				Console.WriteLine("Kunde inte lägga till kontakt.");
+			catch (Exception ex)//if fail log error
+			{ 
+				_logger.LogWarning("Valideringsfel: {Message}", ex.Message);
 			}
 		}
 
@@ -95,13 +125,14 @@ namespace ContactCatalog.Services
 
 		public void ExportCsv()
 		{
-			Console.Write("Exportfil: ");
-			var file = Console.ReadLine() ?? "contacts.csv"; //if users just press enter default to contacts.csv
+			Console.Write("Exportfil(Enter defaults to contacts.csv): ");
+			var fileInput = Console.ReadLine();
+			var file = string.IsNullOrWhiteSpace(fileInput) ? "contacts.csv" : fileInput; //if empty default to contacts.csv else use userinput
 			try
 			{
 				var csv = ToCsv(_contactService.GetAll()); //Get all contacts and formats it
 				File.WriteAllText(file, csv); //Writes the information to file
-				_logger.LogInformation("Exported {Count} contacts to {File}", _contactService.GetAll().Count(), file);
+				_logger.LogInformation("Exported {Count} contacts to {File}", _contactService.GetAll().Count(), Path.GetFullPath(file));
 				Console.WriteLine($"{_contactService.GetAll().Count()} kontakter/exporterad.\n");
 			}
 			catch (Exception ex)
@@ -114,11 +145,11 @@ namespace ContactCatalog.Services
 		private string ToCsv(IEnumerable<Contact> contacts)
 		{
 			var sb = new StringBuilder();
-			sb.AppendLine("Id,Name,Email,Tags"); //Formats the text to file
+			sb.AppendLine("Id|Name|Email|Tags"); //Formats the text to file
 			foreach (var c in contacts)
 			{
-				var tags = string.Join('|', c.Tags);
-				sb.AppendLine($"{c.Id},{c.Name},{c.Email},{tags}"); //Adds the variables
+				var tags = string.Join(',', c.Tags); //formats the tags
+				sb.AppendLine($"{c.Id}|{c.Name}|{c.Email}|{tags}"); //Adds the variables
 			}
 			return sb.ToString();//return formatted string
 		}

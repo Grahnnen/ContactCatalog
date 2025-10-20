@@ -1,5 +1,7 @@
 using ContactCatalog.Models;
 using ContactCatalog.Repositories;
+using ContactCatalog.Validators;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,10 +10,13 @@ namespace ContactCatalog.Services
     public class ContactService
     {
         private readonly IContactRepository _repo;
-
-        public ContactService(IContactRepository repo)
+		private readonly ILogger<ContactService> _logger;
+        private readonly ContactValidator _validator;
+		public ContactService(IContactRepository repo, ILogger<ContactService> logger, ContactValidator validator)
         {
             _repo = repo;
+            _logger = logger;
+            _validator = validator;
         }
 
         public IEnumerable<Contact> GetAll()
@@ -35,7 +40,12 @@ namespace ContactCatalog.Services
 
         public void Add(Contact contact)
         {
-            _repo.Add(contact);
-        }
+		    _validator.Validate(contact); //validate
+
+		    _repo.Add(contact);//add contact to dictionary
+
+		    _logger.LogInformation("Contact added: {Email}", contact.Email);
+		    Console.WriteLine($"\nLade till {contact.Name} i katalogen.\n");
+		}
     }
 }
