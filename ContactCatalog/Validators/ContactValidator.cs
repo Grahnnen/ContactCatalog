@@ -1,5 +1,6 @@
 ﻿using Castle.Core.Resource;
 using ContactCatalog.Models;
+using ContactCatalog.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,10 @@ namespace ContactCatalog.Validators
 		public void Validate(Contact contact)
 		{
 			if (string.IsNullOrWhiteSpace(contact.Name))//if name is empty
-				throw new Exception($"Invalid name{contact.Name}");
+				throw new InvalidContactException($"Invalid name{contact.Name}");
 			if (!IsValidEmail(contact.Email))//if invalid email
 			{
-				throw new Exception($"Invalid email {contact.Email}");
+				throw new InvalidContactException($"Invalid email {contact.Email}");
 			}
 		}
 		public bool IsValidEmail(string email)
