@@ -7,4 +7,4 @@ Seperate Tags with comma(,).
 <img width="1103" height="619" alt="ContactCatalog" src="https://github.com/user-attachments/assets/ba0d575e-c2c5-4f29-825d-151907ba5d91" />
 
 
-This Projects uses xUnit and Moq to test if email is valid and check if it returns user with tag.
+This Projects uses xUnit and Moq to test if an invalid contact throws an error and check if email validation works.
