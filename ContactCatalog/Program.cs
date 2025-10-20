@@ -17,7 +17,7 @@ namespace ContactCatalog
             IContactRepository repository = new ContactRepository();
 			ContactValidator validator = new ContactValidator();
             var service = new ContactService(repository, logger, validator);
-            var ui = new ContactUiService(service, logger);
+            var ui = new MainUiService(service, logger);
 
             ui.MainMenu();
         }

@@ -9,15 +9,11 @@ using System.Threading.Tasks;
 
 namespace ContactCatalog.Services
 {
-	public class ContactUiService
+	public class MainUiService
 	{
 		private readonly ContactService _contactService;
 		private readonly ILogger _logger;
-		private readonly ContactValidator _validator;
-
-		public int id = 1; //ContactID
-
-		public ContactUiService(ContactService service, ILogger<ContactService> logger)
+		public MainUiService(ContactService service, ILogger<ContactService> logger)
 		{
 			_contactService = service;
 			this._logger = logger;
@@ -83,16 +79,9 @@ namespace ContactCatalog.Services
 				.Select(t => t.Trim())
 				.ToList(); //Saves all tags separated by comma
 
-			var contact = new Contact { Id = id, Name = name, Email = email, Tags = tags };//Create new contact 
-			try//Try add contact
-			{
-				_contactService.Add(contact);
-				id++; 
-			}
-			catch (Exception ex)//if fail log error
-			{ 
-				_logger.LogWarning("Valideringsfel: {Message}", ex.Message);
-			}
+			var contact = new Contact {Name = name, Email = email, Tags = tags };//Create new contact object
+
+			_contactService.Add(contact);
 		}
 
 		public void ListContacts()
