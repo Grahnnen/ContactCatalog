@@ -12,7 +12,6 @@ namespace ContactCatalog.Services
         private readonly IContactRepository _repo;
 		private readonly ILogger<ContactService> _logger;
         private readonly ContactValidator _validator;
-
 		public ContactService(IContactRepository repo, ILogger<ContactService> logger, ContactValidator validator)
         {
             _repo = repo;
@@ -41,15 +40,12 @@ namespace ContactCatalog.Services
 
         public void Add(Contact contact)
         {
-			try
-			{
-				_validator.Validate(contact);
-				_repo.Add(contact);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogWarning("Valideringsfel: {Message}", ex.Message);
-			}
+		    _validator.Validate(contact); //validate
+
+		    _repo.Add(contact);//add contact to dictionary
+
+		    _logger.LogInformation("Contact added: {Email}", contact.Email);
+		    Console.WriteLine($"\nLade till {contact.Name} i katalogen.\n");
 		}
     }
 }

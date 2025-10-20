@@ -13,10 +13,10 @@ namespace ContactCatalog.Validators
 		public void Validate(Contact contact)
 		{
 			if (string.IsNullOrWhiteSpace(contact.Name))//if name is empty
-				throw new InvalidNameException(contact.Name);
+				throw new Exception($"Invalid name{contact.Name}");
 			if (!IsValidEmail(contact.Email))//if invalid email
 			{
-				throw new InvalidEmailException(contact.Email);
+				throw new Exception($"Invalid email {contact.Email}");
 			}
 		}
 		public bool IsValidEmail(string email)
