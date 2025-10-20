@@ -17,7 +17,7 @@ namespace ContactCatalog.Repositories
 
 		public void Add(Contact contact)
 		{
-			ContactValidator.Validate(contact);//Validate User input
+			new ContactValidator().Validate(contact);//Validate User input
 			if (!_emails.Add(contact.Email))//if duplicate email
 				throw new DuplicateEmailException(contact.Email);
 

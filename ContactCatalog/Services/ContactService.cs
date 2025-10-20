@@ -1,5 +1,7 @@
 using ContactCatalog.Models;
 using ContactCatalog.Repositories;
+using ContactCatalog.Validators;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,10 +10,14 @@ namespace ContactCatalog.Services
     public class ContactService
     {
         private readonly IContactRepository _repo;
+		private readonly ILogger<ContactService> _logger;
+        private readonly ContactValidator _validator;
 
-        public ContactService(IContactRepository repo)
+		public ContactService(IContactRepository repo, ILogger<ContactService> logger, ContactValidator validator)
         {
             _repo = repo;
+            _logger = logger;
+            _validator = validator;
         }
 
         public IEnumerable<Contact> GetAll()
@@ -35,7 +41,15 @@ namespace ContactCatalog.Services
 
         public void Add(Contact contact)
         {
-            _repo.Add(contact);
-        }
+			try
+			{
+				_validator.Validate(contact);
+				_repo.Add(contact);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogWarning("Valideringsfel: {Message}", ex.Message);
+			}
+		}
     }
 }

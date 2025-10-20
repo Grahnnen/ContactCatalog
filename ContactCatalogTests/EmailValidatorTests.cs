@@ -9,7 +9,7 @@ namespace ContactCatalogTests
 		[InlineData("invalid-email", false)]
 		public void Given_ValidEmail_When_Validated_Then_ShouldReturnTrue(string email, bool expected)
 		{
-			Assert.Equal(expected, ContactValidator.IsValidEmail(email));
+			Assert.Equal(expected, new ContactValidator().IsValidEmail(email));
 		}
 	}
 }

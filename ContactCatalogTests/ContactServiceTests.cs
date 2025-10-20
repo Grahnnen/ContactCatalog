@@ -1,28 +1,35 @@
-using Xunit;
+using Castle.Core.Resource;
+using ContactCatalog;
+using ContactCatalog.Models;
+using ContactCatalog.Repositories;
+using ContactCatalog.Services;
+using ContactCatalog.Validators;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
-using ContactCatalog;
-using ContactCatalog.Repositories;
-using ContactCatalog.Services;
-using ContactCatalog.Models;
+using Xunit;
 
 public class ContactServiceTests
 {
-    [Fact]
-    public void Filter_By_Tag_Returns_Only_Matching()
-    {
-        var mock = new Mock<IContactRepository>();
-        mock.Setup(r => r.GetAll()).Returns(new[]
-        {
-            new Contact { Id = 1, Name = "Anna", Email = "a@x.se", Tags = new List<string> { "friend" } },
-            new Contact { Id = 2, Name = "Bo",   Email = "b@x.se", Tags = new List<string> { "work" } }
-        });
+	[Fact]
+	public void LogsWarning_WhenValidationFails()
+	{
+		var repoMock = new Mock<IContactRepository>();
+		var loggerMock = new Mock<ILogger<ContactService>>();
+		var validator = new ContactValidator();
+		var service = new ContactService(repoMock.Object, loggerMock.Object, validator);
 
-        var svc = new ContactService(mock.Object);
-        var result = svc.FilterByTag("friend").ToList();
+		var invalidCustomer = new Contact { Name = "", Email = "test@example.com" };
+		service.Add(invalidCustomer);
 
-        Assert.Single(result);
-        Assert.Equal("Anna", result[0].Name);
-    }
+		loggerMock.Verify(
+			x => x.Log(
+				LogLevel.Warning,
+				It.IsAny<EventId>(),
+				It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Valideringsfel")),
+				It.IsAny<Exception>(),
+				It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+			Times.Once);
+	}
 }

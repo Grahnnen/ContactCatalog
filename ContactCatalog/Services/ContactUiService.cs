@@ -13,12 +13,14 @@ namespace ContactCatalog.Services
 	{
 		private readonly ContactService _contactService;
 		private readonly ILogger _logger;
+		private readonly ContactValidator _validator;
 
 		private int id = 1; //ContactID
-		public ContactUiService(ContactService service, ILogger<ContactService> logger)
+		public ContactUiService(ContactService service, ILogger<ContactService> logger, ContactValidator validator)
 		{
 			_contactService = service;
 			this._logger = logger;
+			_validator = validator;
 		}
 
 		public void AddContact()

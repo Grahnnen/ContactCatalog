@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace ContactCatalog.Validators
 {
-	public static class ContactValidator
+	public class ContactValidator
 	{
-		public static void Validate(Contact contact)
+		public void Validate(Contact contact)
 		{
 			if (string.IsNullOrWhiteSpace(contact.Name))//if name is empty
 				throw new InvalidNameException(contact.Name);
@@ -19,7 +19,7 @@ namespace ContactCatalog.Validators
 				throw new InvalidEmailException(contact.Email);
 			}
 		}
-		public static bool IsValidEmail(string email)
+		public bool IsValidEmail(string email)
 		{
 			try
 			{

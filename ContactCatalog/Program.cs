@@ -5,6 +5,7 @@ using System.Linq;
 using System.IO;
 using ContactCatalog.Repositories;
 using ContactCatalog.Services;
+using ContactCatalog.Validators;
 
 namespace ContactCatalog
 {
@@ -18,8 +19,9 @@ namespace ContactCatalog
 
             //setup UiService and respository
             IContactRepository repository = new ContactRepository();
-            var service = new ContactService(repository);
-            var ui = new ContactUiService(service, logger);
+            var validator = new ContactValidator();
+            var service = new ContactService(repository, logger, validator);
+            var ui = new ContactUiService(service, logger, validator);
 
             while (true)
             {
