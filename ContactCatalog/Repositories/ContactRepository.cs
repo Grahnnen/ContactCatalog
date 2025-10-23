@@ -21,6 +21,7 @@ namespace ContactCatalog.Repositories
 		{
 			if (!_emails.Add(contact.Email))//if duplicate email throw error but if its unique add it to the Hashset
 				throw new Exception($"Email already exist! {contact.Email}");
+
 			//add the customer to dictionary
 			_contacts.Add(contact.Id, contact);
 		}
