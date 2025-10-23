@@ -13,7 +13,3 @@ This Projects uses xUnit and Moq to test if an invalid contact throws an error a
 ## Usage
 Seperate Tags with comma(,).
 <br>Export to CSV exports to "ContactCatalog\bin\Debug\net8.0" with the filename and extenstion typed by the user.
-
-
-
-
