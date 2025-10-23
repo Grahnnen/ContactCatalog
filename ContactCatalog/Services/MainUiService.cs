@@ -134,11 +134,11 @@ namespace ContactCatalog.Services
 		private string ToCsv(IEnumerable<Contact> contacts)
 		{
 			var sb = new StringBuilder();
-			sb.AppendLine("Id|Name|Email|Tags"); //Formats the text to file
+			sb.AppendLine("Id|Name|Email|Tags"); //Adds header format to file
 			foreach (var c in contacts)
 			{
 				var tags = string.Join(',', c.Tags); //formats the tags
-				sb.AppendLine($"{c.Id}|{c.Name}|{c.Email}|{tags}"); //Adds the variables
+				sb.AppendLine($"{c.Id}|{c.Name}|{c.Email}|{tags}"); //Adds the variables below the header
 			}
 			return sb.ToString();//return formatted string
 		}

@@ -26,8 +26,8 @@ namespace ContactCatalog.Validators
 			{
 				if (string.IsNullOrWhiteSpace(email))//if email is empty
 					return false;
-				var addr = new System.Net.Mail.MailAddress(email);
-				return addr.Address == email;
+				var addr = new System.Net.Mail.MailAddress(email); //format the sent email parameter according to built in mailadressmethod
+				return addr.Address == email;//true if the email stays the same
 			}
 			catch 
 			{
@@ -35,5 +35,4 @@ namespace ContactCatalog.Validators
 			}
 		}
 	}
-
 }
